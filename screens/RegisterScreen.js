@@ -1,18 +1,18 @@
-import React, {useState, useContext} from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Animatable from "react-native-animatable";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
-import auth from '../api/auth'
-import AuthContext from '../context/AuthContext'
+import auth from "../api/auth";
+import AuthContext from "../context/AuthContext";
 import AppText from "../components/AppText";
 import AppInput from "../components/AppInput";
 import { colors } from "../config/colors";
@@ -25,11 +25,9 @@ const validationSchema = Yup.object().shape({
   passwordConfirm: Yup.string()
     // .oneOf([Yup.ref("password"), null], "Passwords must match")
     // .required("Password confirm is required"),
-    .oneOf([Yup.ref('password')], 'Passwords must match')
-    .required('Password confirm is required')
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Password confirm is required"),
 });
-
-
 
 const slideIn = {
   0: {
@@ -41,19 +39,18 @@ const slideIn = {
 };
 
 export default function LoginScreen() {
+  const [loaderVisible, setLoaderVisible] = useState(false);
+  const { onAuth } = useContext(AuthContext);
 
-  const [loaderVisible, setLoaderVisible] = useState(false)
-  const { onAuth } = useContext(AuthContext)
-
-  const handleRegister = async ({name, email, password, passwordConfirm}) => {
-    setLoaderVisible(true)
-    const res = await auth.signup(name, email, password, passwordConfirm)
-    if(res.status === 'success') {
-      onAuth(res.user)
+  const handleRegister = async ({ name, email, password, passwordConfirm }) => {
+    setLoaderVisible(true);
+    const res = await auth.signup(name, email, password, passwordConfirm);
+    if (res.status === "success") {
+      onAuth({ ...res.user, token: res.token });
     } else {
       console.log(res.status);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -154,7 +151,11 @@ export default function LoginScreen() {
                     style={styles.button}
                   >
                     {loaderVisible ? (
-                      <ActivityIndicator color={colors.white} animating={loaderVisible} size='small' />
+                      <ActivityIndicator
+                        color={colors.white}
+                        animating={loaderVisible}
+                        size="small"
+                      />
                     ) : (
                       <AppText style={styles.btnText}>Create Account</AppText>
                     )}
@@ -205,8 +206,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: colors.secondary,
     borderRadius: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     //elevation: 1.5,
   },
   btnText: {
@@ -220,6 +221,6 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   error: {
-    marginLeft: 10
-  }
+    marginLeft: 10,
+  },
 });

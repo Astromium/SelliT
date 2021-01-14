@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Animatable from "react-native-animatable";
@@ -13,11 +13,11 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 
 import AppText from "../components/AppText";
-import AppInput from '../components/AppInput'
+import AppInput from "../components/AppInput";
 import Login from "../svg/Login";
 import { colors } from "../config/colors";
-import AuthContext from '../context/AuthContext'
-import auth from '../api/auth'
+import AuthContext from "../context/AuthContext";
+import auth from "../api/auth";
 
 const { width, height } = Dimensions.get("window");
 
@@ -47,21 +47,19 @@ const slideIn = {
 };
 
 export default function LoginScreen() {
+  const [loaderVisible, setLoaderVisible] = useState(false);
+  const { onAuth } = useContext(AuthContext);
 
-  const [loaderVisible, setLoaderVisible] = useState(false)
-  const { onAuth } = useContext(AuthContext)
-
-  const handleLogin = async ({email, password}) => {
-    setLoaderVisible(true)
-    const res = await auth.login(email, password)
-    if(res.status === 'success') {
-      setLoaderVisible(false)
-      await onAuth(res.user)
+  const handleLogin = async ({ email, password }) => {
+    setLoaderVisible(true);
+    const res = await auth.login(email, password);
+    if (res.status === "success") {
+      setLoaderVisible(false);
+      await onAuth({ ...res.user, token: res.token });
     } else {
       console.log(res.status);
     }
-  }
-  
+  };
 
   return (
     <View style={styles.container}>
@@ -192,10 +190,10 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: width * 0.8,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   error: {
     marginLeft: 10,
-    color: '#000'
-  }
+    color: "#000",
+  },
 });
